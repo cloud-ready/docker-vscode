@@ -1,0 +1,28 @@
+# docker run --rm -it -p 127.0.0.1:8080:8080 -v "$PWD:/home/coder/project" --security-opt seccomp=unconfined codercom/code-server --auth none
+version: '2.1'
+services:
+  code-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: --auth none
+    container_name: code-server
+    environment:
+      PASSWORD: ${PASSWORD:-password}
+    hostname: code-server
+    image: cloudready/code-server:v2
+    ports:
+      - "${EXTERNAL_8080_PORT:-8080}:8080"
+    restart: always
+    security_opt:
+      - seccomp:unconfined
+    volumes:
+      - project:/home/coder/project
+
+volumes:
+  project:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${PWD}/data/project
+      o: bind
